@@ -114,9 +114,11 @@ must not be assumed to generalise.
 When the document is hidden — background tab, or a fully occluded window on macOS —
 Chrome skips its "update the rendering" step. Both `scroll` events and
 `IntersectionObserver` callbacks are delivered from that step, so Instagram never
-loads the next page even though `scrollTop` changes. In a hidden tab a stall is
-**not** an end of list. The collector must run in a visible tab; it should surface
-`document.visibilityState` in its stall diagnostics.
+loads the next page even though `scrollTop` changes, and a windowed list stops
+re-rendering. In a hidden tab a stall is **not** an end of list, and a windowed list
+looks exhausted after ten rows. The collector therefore pauses whenever
+`document.visibilityState` is `hidden` and resumes on `visibilitychange`, resetting
+its patience clocks so hidden time never counts as "no growth".
 
 ## Design implications
 

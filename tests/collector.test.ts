@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { collect, CollectionError, type Progress } from "../src/collector";
 import { findDialog } from "../src/instagram/discovery";
 import { fakeDialog, fakePage, usernames, type FakeList } from "./helpers/fake-list";
+import { resetVisibility, setVisibility } from "./helpers/visibility";
+
+afterEach(resetVisibility);
 
 const timing = { settleMs: 5, loadTimeoutMs: 80, confirmTimeoutMs: 30 };
 
@@ -169,6 +172,32 @@ describe("collect", () => {
     } finally {
       clearInterval(interval);
     }
+  });
+
+  it("pauses while the document is hidden and resumes when it is shown", async () => {
+    const { fake, all } = growingList(30, 10);
+    const counts: number[] = [];
+    setVisibility("hidden");
+
+    const pending = collect({ root: fake.root, timing, onProgress: ({ collected }) => counts.push(collected) });
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    expect(counts).toEqual([]);
+
+    setVisibility("visible");
+    const result = await pending;
+
+    expect(names(result)).toEqual(all);
+  });
+
+  it("returns cancelled when aborted while paused", async () => {
+    const { fake } = growingList(30, 10);
+    const controller = new AbortController();
+    setVisibility("hidden");
+
+    const pending = collect({ root: fake.root, timing, signal: controller.signal });
+    controller.abort();
+
+    await expect(pending).resolves.toMatchObject({ stopReason: "cancelled", users: [] });
   });
 
   it("returns partial results when cancelled", async () => {

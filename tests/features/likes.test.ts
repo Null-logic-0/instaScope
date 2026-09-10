@@ -42,6 +42,23 @@ describe("collectLikes", () => {
     expect(result.users.map((u) => u.username)).toEqual(names);
   });
 
+  it("accepts several links to the same post's likes", async () => {
+    const names = usernames(3);
+    document.body.innerHTML = `
+      <main><article>
+        <a href="/p/post0/liked_by/"><img alt="liker"></a>
+        <a href="/p/post0/liked_by/">others</a>
+      </article></main>`;
+    document.querySelector('a[href$="/liked_by/"]')!.addEventListener("click", (event) => {
+      event.preventDefault();
+      setTimeout(() => fakeDialog({ usernames: names, spinner: false }), 5);
+    });
+
+    const result = await collectLikes({ timing });
+
+    expect(result.users.map((u) => u.username)).toEqual(names);
+  });
+
   it("fails when no post is open", async () => {
     document.body.innerHTML = "<main><a href='/alice/'>alice</a></main>";
 

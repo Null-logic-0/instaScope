@@ -27,11 +27,21 @@ export function createConsoleApi({ log = console.log, progressIntervalMs = 2000 
       log(`[instaScope] ${name}: ${progress.collected} users so far (${elapsed(started)})`);
     };
 
+    const onVisibilityChange = (): void => {
+      log(
+        document.visibilityState === "hidden"
+          ? `[instaScope] ${name}: paused, the tab is hidden. Bring it to the front to continue.`
+          : `[instaScope] ${name}: resumed.`,
+      );
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     try {
       const result = await feature({ ...options, signal: current.signal, onProgress });
       log(`[instaScope] ${name}: ${result.users.length} users, ${describe(result)} (${elapsed(started)})`);
       return result;
     } finally {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       current = null;
     }
   }
@@ -62,9 +72,7 @@ function describe(result: CollectionResult): string {
     case "cancelled":
       return "cancelled, results are partial";
     case "stalled":
-      return document.visibilityState === "hidden"
-        ? "stalled while the tab was hidden. Keep the tab visible and run again; results are partial"
-        : "stalled, Instagram stopped loading rows; results are partial";
+      return "stalled, Instagram stopped loading rows; results are partial";
   }
 }
 

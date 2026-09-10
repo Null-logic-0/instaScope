@@ -1,5 +1,6 @@
 import { readScrollPosition, scrollForward } from "./core/scrolling";
 import { UserSet } from "./core/user-set";
+import { isHidden, waitUntilVisible } from "./core/visibility";
 import { waitForChange } from "./core/wait-for-change";
 import { discoverList } from "./instagram/discovery";
 import { extractUsers } from "./instagram/extraction";
@@ -71,6 +72,12 @@ export async function collect(options: CollectOptions): Promise<CollectionResult
 
   while (true) {
     if (signal?.aborted) return done("cancelled");
+    if (isHidden(doc)) {
+      const outcome = await waitUntilVisible(doc, signal);
+      if (outcome === "aborted") return done("cancelled");
+      stuckSince = null;
+      missingSince = null;
+    }
     round += 1;
 
     const root = connected(resolveRoot());

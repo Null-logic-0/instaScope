@@ -10,10 +10,11 @@ export async function collectLikes(options: FeatureOptions = {}): Promise<Collec
     return collect({ ...collectOptions, document: doc, root: () => likesPage(doc) });
   }
 
-  const links = doc.querySelectorAll('a[href$="/liked_by/"]');
-  const link = links.item(0);
+  const links = Array.from(doc.querySelectorAll('a[href$="/liked_by/"]'));
+  const [link] = links;
   if (!link) throw new Error("Could not find the likes link. Open a post first.");
-  if (links.length > 1) throw new Error("Several posts are on screen. Open a single post first.");
+  const posts = new Set(links.map((anchor) => anchor.getAttribute("href")));
+  if (posts.size > 1) throw new Error("Several posts are on screen. Open a single post first.");
 
   const before = countDialogs(doc);
   const likesSurface = (): Element | null =>
