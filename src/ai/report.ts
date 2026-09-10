@@ -19,12 +19,28 @@ export async function explainStats({ client, stats, signal, maxChars = 2000 }: R
           "been collected yet; say so rather than guessing. Write three to six short plain sentences, no headings, no " +
           "markdown, no growth advice. If a previous snapshot exists, describe what changed since it.",
       },
-      { role: "user", content: JSON.stringify(stats, null, 2) },
+      { role: "user", content: describeStats(stats) },
     ],
-    options: { temperature: 0.3 },
+    options: { temperature: 0 },
     signal,
   });
   return sanitize(content, maxChars);
+}
+
+export function describeStats(stats: Stats): string {
+  const n = (value: number | null) => (value === null ? "not collected yet" : String(value));
+  const date = (value: string | null) => (value ? value.slice(0, 10) : "none");
+  return [
+    `Account: ${stats.subject}`,
+    `Followers: ${n(stats.followers)} (snapshot taken ${date(stats.followersTakenAt)})`,
+    `Accounts the account follows: ${n(stats.following)} (snapshot taken ${date(stats.followingTakenAt)})`,
+    `Mutual follows, both follow each other: ${n(stats.mutuals)}`,
+    `Accounts the account follows that do not follow it back: ${n(stats.notFollowingBack)}`,
+    `Followers the account does not follow back: ${n(stats.fans)}`,
+    `Previous followers snapshot: ${date(stats.previousFollowersTakenAt)}`,
+    `New followers since the previous snapshot: ${n(stats.newFollowers)}`,
+    `Lost followers since the previous snapshot: ${n(stats.lostFollowers)}`,
+  ].join("\n");
 }
 
 const ch = String.fromCharCode;

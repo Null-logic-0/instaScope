@@ -34,8 +34,35 @@ describe("explainStats", () => {
       format?: unknown;
     };
     expect(body.messages[0]!.content).toMatch(/never invent figures/);
-    expect(JSON.parse(body.messages[1]!.content)).toEqual(stats);
+    expect(body.messages[1]!.content).toBe(
+      [
+        "Account: me",
+        "Followers: 421 (snapshot taken 2026-09-10)",
+        "Accounts the account follows: 380 (snapshot taken 2026-09-10)",
+        "Mutual follows, both follow each other: 300",
+        "Accounts the account follows that do not follow it back: 80",
+        "Followers the account does not follow back: 121",
+        "Previous followers snapshot: 2026-09-01",
+        "New followers since the previous snapshot: 37",
+        "Lost followers since the previous snapshot: 12",
+      ].join("\n"),
+    );
+    expect(body.options).toEqual({ temperature: 0 });
     expect(body.format).toBeUndefined();
+  });
+
+  it("spells out what has not been collected instead of sending nulls", async () => {
+    const { fetch, calls } = fakeFetch(() => chatReply("ok"));
+
+    await explainStats({
+      client: client(fetch),
+      stats: { ...stats, following: null, mutuals: null, newFollowers: null, previousFollowersTakenAt: null, followingTakenAt: null },
+    });
+
+    const content = (calls[0]!.body as { messages: { content: string }[] }).messages[1]!.content;
+    expect(content).toContain("Accounts the account follows: not collected yet (snapshot taken none)");
+    expect(content).toContain("New followers since the previous snapshot: not collected yet");
+    expect(content).not.toContain("null");
   });
 
   it("propagates Ollama errors", async () => {
