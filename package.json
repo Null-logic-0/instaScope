@@ -1,7 +1,7 @@
 {
   "name": "instascope",
   "version": "0.1.0",
-  "description": "Collect followers, following and likes from Instagram lists in your own authenticated browser session.",
+  "description": "Collect followers, following and likes from Instagram.",
   "license": "GPL-3.0",
   "type": "module",
   "private": true,
@@ -9,9 +9,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm test"
+    "check": "npm run typecheck && npm test",
+    "build": "esbuild src/index.ts --bundle --format=iife --global-name=instaScope --target=es2022 --charset=utf8 --outfile=dist/instascope.js --banner:js=\"/* instaScope 0.1.0 | GPL-3.0 */\""
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "happy-dom": "^20.14.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.0"
