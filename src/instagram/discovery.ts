@@ -24,8 +24,9 @@ export function profileAnchors(root: Element): HTMLAnchorElement[] {
 
 function distinctUsernames(element: Element): number {
   const usernames = new Set<string>();
-  for (const anchor of profileAnchors(element)) {
-    usernames.add(parseProfileHref(anchor.getAttribute("href"))!);
+  for (const anchor of element.querySelectorAll("a[href]")) {
+    const username = parseProfileHref(anchor.getAttribute("href"));
+    if (username !== null) usernames.add(username);
   }
   return usernames.size;
 }
