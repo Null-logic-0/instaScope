@@ -1,4 +1,4 @@
-# instaScope
+# InstaScope
 
 Collect the followers, following and likes lists you can already see on Instagram,
 from your own logged-in browser session, keep snapshots of them locally, and turn them
@@ -10,9 +10,9 @@ Everything happens in your browser and on your computer. Nothing is sent to any 
 service.
 
 ```js
-await instaScope.collectFollowers();      // opens the dialog, scrolls it, stores a snapshot
+await instaScope.collectFollowers(); // opens the dialog, scrolls it, stores a snapshot
 await instaScope.collectFollowing();
-instaScope.stats();                       // followers 421, following 380, mutuals 300, …
+instaScope.stats(); // followers 421, following 380, mutuals 300, …
 instaScope.downloadCsv("not-following-back");
 ```
 
@@ -50,7 +50,7 @@ For likes, open a post instead.
 **Step 3 – paste the tool into the browser console**
 
 Press `F12` (or `Cmd+Option+J` on a Mac) to open the developer tools and click the
-*Console* tab. Open `dist/instascope.js` in a text editor, copy everything, paste it into
+_Console_ tab. Open `dist/instascope.js` in a text editor, copy everything, paste it into
 the console and press Enter. The first time, Chrome asks you to type `allow pasting`
 first; that is normal.
 
@@ -59,15 +59,15 @@ first; that is normal.
 Type one of these and press Enter:
 
 ```js
-await instaScope.collectFollowers()
+await instaScope.collectFollowers();
 ```
 
 ```js
-await instaScope.collectFollowing()
+await instaScope.collectFollowing();
 ```
 
 ```js
-await instaScope.collectLikes()
+await instaScope.collectLikes();
 ```
 
 The tool opens the list, scrolls through it by itself and tells you how many accounts it
@@ -77,9 +77,9 @@ continues when you come back.
 **Step 5 – get your files**
 
 ```js
-instaScope.downloadCsv("followers")          // one list
-instaScope.downloadCsv("not-following-back") // people you follow who do not follow you
-instaScope.downloadJson()                    // a full backup of everything collected
+instaScope.downloadCsv("followers"); // one list
+instaScope.downloadCsv("not-following-back"); // people you follow who do not follow you
+instaScope.downloadJson(); // a full backup of everything collected
 ```
 
 The CSV files open directly in Excel, Numbers or Google Sheets. To see who is new or who
@@ -96,7 +96,7 @@ block this from inside the Instagram tab, it runs on a small local page instead:
 1. Install Ollama and run `ollama pull llama3.2` once.
 2. In the Instagram tab, run `instaScope.downloadJson()` to save a backup.
 3. Run `npm run workbench` in the terminal and open <http://localhost:4173/>.
-4. Import the backup file, press *Classify profiles*, then download any CSV.
+4. Import the backup file, press _Classify profiles_, then download any CSV.
 
 If Ollama is not installed, the page still shows your numbers and downloads; only the
 AI buttons are disabled.
@@ -177,10 +177,10 @@ detects this, pauses, and resumes when the tab is shown again.
 
 ```js
 await instaScope.collectFollowers({
-  maxUsers: 500,                  // stop early with stopReason "target_reached"
-  timing: { loadTimeoutMs: 15000 } // wait longer for slow connections (default 8000)
+  maxUsers: 500, // stop early with stopReason "target_reached"
+  timing: { loadTimeoutMs: 15000 }, // wait longer for slow connections (default 8000)
 });
-instaScope.cancel();              // stop the running collection; partial results are returned
+instaScope.cancel(); // stop the running collection; partial results are returned
 ```
 
 ## Snapshots, datasets and statistics
@@ -192,23 +192,23 @@ kept once per username. Thirty snapshots per list are retained.
 
 Deterministic set arithmetic over the latest snapshots gives the datasets:
 
-| Dataset | Meaning | File |
-|---|---|---|
-| `followers` | latest followers snapshot | `followers.csv` |
-| `following` | latest following snapshot | `following.csv` |
-| `mutuals` | in both lists | `mutuals.csv` |
-| `not-following-back` | you follow them, they do not follow you | `not-following-back.csv` |
-| `fans` | they follow you, you do not follow them | `fans.csv` |
-| `new-followers` | in the latest followers snapshot but not the previous one | `new-followers.csv` |
-| `lost-followers` | in the previous followers snapshot but not the latest | `lost-followers.csv` |
-| `snapshot` | everyone in either list, with their relationship | `snapshot-2026-09-10.csv` |
+| Dataset              | Meaning                                                   | File                      |
+| -------------------- | --------------------------------------------------------- | ------------------------- |
+| `followers`          | latest followers snapshot                                 | `followers.csv`           |
+| `following`          | latest following snapshot                                 | `following.csv`           |
+| `mutuals`            | in both lists                                             | `mutuals.csv`             |
+| `not-following-back` | you follow them, they do not follow you                   | `not-following-back.csv`  |
+| `fans`               | they follow you, you do not follow them                   | `fans.csv`                |
+| `new-followers`      | in the latest followers snapshot but not the previous one | `new-followers.csv`       |
+| `lost-followers`     | in the previous followers snapshot but not the latest     | `lost-followers.csv`      |
+| `snapshot`           | everyone in either list, with their relationship          | `snapshot-2026-09-10.csv` |
 
 ```js
-instaScope.subjects();                       // accounts with snapshots
-instaScope.stats();                          // counts for the latest account (or stats("username"))
-instaScope.dataset("mutuals");               // rows as objects
-instaScope.exportCsv("lost-followers");      // CSV string
-instaScope.downloadCsv("snapshot");          // browser download
+instaScope.subjects(); // accounts with snapshots
+instaScope.stats(); // counts for the latest account (or stats("username"))
+instaScope.dataset("mutuals"); // rows as objects
+instaScope.exportCsv("lost-followers"); // CSV string
+instaScope.downloadCsv("snapshot"); // browser download
 ```
 
 CSV columns are `username, display_name, profile_url, relationship, first_seen,
@@ -219,8 +219,8 @@ and downloads carry a UTF-8 byte order mark so Excel decodes non-ASCII names.
 ### JSON backup
 
 ```js
-instaScope.downloadJson();                   // instascope-backup-2026-09-10.json
-await instaScope.importJson(fileOrString);   // merges: earliest first seen, newest details
+instaScope.downloadJson(); // instascope-backup-2026-09-10.json
+await instaScope.importJson(fileOrString); // merges: earliest first seen, newest details
 ```
 
 The backup is the whole store and is the canonical format; CSV is the interoperability
@@ -252,25 +252,28 @@ ollama pull llama3.2
 Ollama accepts requests from `localhost` pages by default, so no configuration is
 needed for the workbench. The page shows one of:
 
-| State | Meaning |
-|---|---|
+| State              | Meaning                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------- |
 | Ollama unavailable | the server is not running or not reachable; AI features are disabled, everything else works |
-| Model unavailable | the server runs but the configured model is not installed (`ollama pull …`) |
-| Model ready | classification and reports can run |
+| Model unavailable  | the server runs but the configured model is not installed (`ollama pull …`)                 |
+| Model ready        | classification and reports can run                                                          |
 
 Change the server or model in the page, or from the console:
 
 ```js
 await instaScope.ai.status();
-instaScope.ai.configure({ model: "gemma3:4b", baseUrl: "http://localhost:11434" });
+instaScope.ai.configure({
+  model: "gemma3:4b",
+  baseUrl: "http://localhost:11434",
+});
 ```
 
 ### Profile classification
 
 ```js
-await instaScope.ai.classify();                      // every stored profile
+await instaScope.ai.classify(); // every stored profile
 await instaScope.ai.classify({ dataset: "mutuals" }); // one dataset
-await instaScope.ai.classify({ force: true });        // re-classify
+await instaScope.ai.classify({ force: true }); // re-classify
 instaScope.ai.cancel();
 ```
 
@@ -336,7 +339,7 @@ store snapshot → datasets / statistics → CSV, JSON backup
 Three details carry most of the weight:
 
 - **A row is the largest subtree containing exactly one profile link.** Instagram's rows
-  have no semantic marker, but the identity link is stable. Starting from the *first*
+  have no semantic marker, but the identity link is stable. Starting from the _first_
   link also keeps the followers dialog's "Suggested for you" section out, because those
   rows live under a different parent.
 - **The scroll container is the nearest ancestor with `overflow-y: auto|scroll` that
@@ -437,7 +440,7 @@ npm run check
 ```
 
 This runs the type checker and the full test suite; both must pass. Keep pull requests
-small and focused, write commit messages that say *why*, and describe how you tested
+small and focused, write commit messages that say _why_, and describe how you tested
 against the real site if you did. Code in this repository is written without explanatory
 comments; put the explanation in the pull request instead.
 
@@ -453,5 +456,5 @@ It is a clean-room reimplementation of the idea behind the older GPL-licensed
 `instagram-parser` console script: it was written from the observed behaviour of that
 tool and of Instagram's current markup, not from its source. No code from
 `instagram-parser` was copied, adapted or translated, which is what makes an independent
-licence possible. Renaming variables or restructuring copied code would *not* have made
+licence possible. Renaming variables or restructuring copied code would _not_ have made
 it independent; not copying did.
