@@ -31,9 +31,6 @@ function firstUsername(row: Element): string | null {
   return null;
 }
 
-// Instagram renders the display name as a span[dir="auto"] that sits outside
-// the username anchor and the follow button; the username's own span is
-// inside the anchor and the button label is a div.
 function findDisplayName(row: Element): string | undefined {
   for (const span of row.querySelectorAll('span[dir="auto"]')) {
     if (span.closest("a, button") !== null) continue;
