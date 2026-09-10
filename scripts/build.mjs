@@ -10,7 +10,7 @@ await build({
   target: "es2022",
   charset: "utf8",
   outfile: "dist/instascope.js",
-  banner: { js: "/* instaScope 0.1.0 | GPL-3.0 */" },
+  banner: { js: "/* instaScope 0.1.0 | MIT License */" },
 });
 await cp("workbench", "dist", { recursive: true });
 console.log("built dist/instascope.js and copied workbench/ into dist/");

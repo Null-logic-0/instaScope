@@ -16,6 +16,91 @@ instaScope.stats();                       // followers 421, following 380, mutua
 instaScope.downloadCsv("not-following-back");
 ```
 
+## How to use it (plain English)
+
+instaScope is a small tool you run inside your own browser while you are logged in to
+Instagram. It reads the lists Instagram already shows you (followers, following, likes)
+and saves them as files you can open in Excel or Google Sheets.
+
+**What you need**
+
+- A computer with Chrome (or another browser with developer tools).
+- [Node.js](https://nodejs.org) version 22 or newer, only to build the tool once.
+- Your own Instagram account, logged in as usual.
+
+**Step 1 – build the tool once**
+
+Open a terminal in this folder and run:
+
+```bash
+npm install
+```
+
+```bash
+npm run build
+```
+
+This creates a file called `dist/instascope.js`. That file is the whole tool.
+
+**Step 2 – open the list you want on Instagram**
+
+Go to instagram.com, open your profile (or any profile whose lists you can see).
+For likes, open a post instead.
+
+**Step 3 – paste the tool into the browser console**
+
+Press `F12` (or `Cmd+Option+J` on a Mac) to open the developer tools and click the
+*Console* tab. Open `dist/instascope.js` in a text editor, copy everything, paste it into
+the console and press Enter. The first time, Chrome asks you to type `allow pasting`
+first; that is normal.
+
+**Step 4 – collect a list**
+
+Type one of these and press Enter:
+
+```js
+await instaScope.collectFollowers()
+```
+
+```js
+await instaScope.collectFollowing()
+```
+
+```js
+await instaScope.collectLikes()
+```
+
+The tool opens the list, scrolls through it by itself and tells you how many accounts it
+found. Keep the browser tab visible while it works; if you switch away it pauses and
+continues when you come back.
+
+**Step 5 – get your files**
+
+```js
+instaScope.downloadCsv("followers")          // one list
+instaScope.downloadCsv("not-following-back") // people you follow who do not follow you
+instaScope.downloadJson()                    // a full backup of everything collected
+```
+
+The CSV files open directly in Excel, Numbers or Google Sheets. To see who is new or who
+left, collect your followers again another day and use `"new-followers"` or
+`"lost-followers"`.
+
+**Optional – sort accounts into categories with local AI**
+
+If you install [Ollama](https://ollama.com) on your computer, instaScope can guess a
+category for each account (Fitness, Creator, Business, …) and write a short summary of
+your numbers. This never leaves your computer. Because Instagram's security settings
+block this from inside the Instagram tab, it runs on a small local page instead:
+
+1. Install Ollama and run `ollama pull llama3.2` once.
+2. In the Instagram tab, run `instaScope.downloadJson()` to save a backup.
+3. Run `npm run workbench` in the terminal and open <http://localhost:4173/>.
+4. Import the backup file, press *Classify profiles*, then download any CSV.
+
+If Ollama is not installed, the page still shows your numbers and downloads; only the
+AI buttons are disabled.
+
 ## Why a rewrite
 
 The original `instagram-parser` was a console script built on Instagram's generated
@@ -329,14 +414,44 @@ To debug against the real site, build, paste the bundle into the console, and pa
 `onProgress` callback. Instagram's Content Security Policy forbids `eval`, so the
 bundle has to be pasted or loaded from a `blob:` URL.
 
+## Contributing
+
+Contributions are welcome. The easiest way to help:
+
+1. **Report what broke.** If a collection stops working, open an issue with the output
+   of `instaScope.collectFollowers()` (it prints why it stopped) and, if you can, the
+   result of the inspection snippet in [docs/instagram-dom.md](docs/instagram-dom.md).
+   Do not paste usernames or personal data; the shape of the markup is what matters.
+2. **Fix it with a fixture.** Instagram-specific assumptions live only in
+   `src/instagram/`. When the markup changes, add or update an HTML fixture in
+   `tests/fixtures/` that reproduces the new structure, make the tests fail, then make
+   them pass. A fix without a fixture will break again silently.
+3. **Keep the rules that keep it working.** No generated class names, no fixed
+   `setTimeout` delays for synchronisation, no network calls to anything but Instagram
+   itself and a local Ollama, and every model output validated before it is stored.
+
+Before opening a pull request:
+
+```bash
+npm run check
+```
+
+This runs the type checker and the full test suite; both must pass. Keep pull requests
+small and focused, write commit messages that say *why*, and describe how you tested
+against the real site if you did. Code in this repository is written without explanatory
+comments; put the explanation in the pull request instead.
+
+Ideas that would be welcome: reading the exact follower count from the profile header to
+report "collected 950 of 1 000", a faster path for very large non-windowed lists, and a
+continuous-integration workflow that runs `npm run check`.
+
 ## Licensing
 
-instaScope is licensed under the GNU General Public License v3.0 (see `LICENSE`), the
-same licence as the original `instagram-parser`.
+instaScope is released under the MIT License (see `LICENSE`).
 
-It is a clean-room reimplementation: it was written from the observed behaviour of the
-original tool and of Instagram's current markup, not from the original source. No code
-from `instagram-parser` was copied, adapted or translated, so this licence is a choice
-made to stay compatible with the project it replaces rather than an obligation
-inherited from it. Renaming variables or restructuring copied code would *not* have
-made it independent; not copying did.
+It is a clean-room reimplementation of the idea behind the older GPL-licensed
+`instagram-parser` console script: it was written from the observed behaviour of that
+tool and of Instagram's current markup, not from its source. No code from
+`instagram-parser` was copied, adapted or translated, which is what makes an independent
+licence possible. Renaming variables or restructuring copied code would *not* have made
+it independent; not copying did.

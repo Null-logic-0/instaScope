@@ -2,7 +2,7 @@
   "name": "instascope",
   "version": "0.1.0",
   "description": "Collect followers, following and likes from Instagram.",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "type": "module",
   "private": true,
   "scripts": {
