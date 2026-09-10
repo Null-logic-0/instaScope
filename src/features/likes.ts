@@ -6,8 +6,9 @@ import { CANCELLED_BEFORE_START, countDialogs, type FeatureOptions } from "./fol
 export async function collectLikes(options: FeatureOptions = {}): Promise<CollectionResult> {
   const { document: doc = document, openTimeoutMs = 10_000, ...collectOptions } = options;
 
-  const page = likesPage(doc);
-  if (page) return collect({ ...collectOptions, root: page });
+  if (likesPage(doc)) {
+    return collect({ ...collectOptions, document: doc, root: () => likesPage(doc) });
+  }
 
   const links = doc.querySelectorAll('a[href$="/liked_by/"]');
   const link = links.item(0);
@@ -15,13 +16,15 @@ export async function collectLikes(options: FeatureOptions = {}): Promise<Collec
   if (links.length > 1) throw new Error("Several posts are on screen. Open a single post first.");
 
   const before = countDialogs(doc);
-  const root = await clickAndWaitFor(link, {
+  const likesSurface = (): Element | null =>
+    countDialogs(doc) > before ? findDialog(doc) : likesPage(doc);
+  const opened = await clickAndWaitFor(link, {
     timeoutMs: openTimeoutMs,
     signal: collectOptions.signal,
-    until: (current) => (countDialogs(current) > before ? findDialog(current) : likesPage(current)),
+    until: likesSurface,
   });
-  if (!root) return CANCELLED_BEFORE_START;
-  return collect({ ...collectOptions, root });
+  if (!opened) return CANCELLED_BEFORE_START;
+  return collect({ ...collectOptions, document: doc, root: likesSurface });
 }
 
 function likesPage(doc: Document): Element | null {

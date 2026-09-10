@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { collect, CollectionError, type Progress } from "../src/collector";
+import { findDialog } from "../src/instagram/discovery";
 import { fakeDialog, fakePage, usernames, type FakeList } from "./helpers/fake-list";
 
 const timing = { settleMs: 5, loadTimeoutMs: 80, confirmTimeoutMs: 30 };
@@ -125,6 +126,27 @@ describe("collect", () => {
     expect(result.stopReason).toBe("stalled");
     expect(names(result)).toEqual(all.slice(0, 10));
     expect(Date.now() - started).toBeGreaterThanOrEqual(timing.loadTimeoutMs);
+  });
+
+  it("waits for the first rows to render", async () => {
+    const fake = fakeDialog({ usernames: [], spinner: false });
+    setTimeout(() => fake.appendRows(usernames(3)), 15);
+
+    const result = await collect({ root: fake.root, timing });
+
+    expect(result.stopReason).toBe("end_of_list");
+    expect(result.users).toHaveLength(3);
+  });
+
+  it("recovers when the dialog it started on is replaced", async () => {
+    document.body.innerHTML = '<div role="dialog"><div role="progressbar"></div></div>';
+    const placeholder = document.querySelector('[role="dialog"]')!;
+    setTimeout(() => fakeDialog({ usernames: usernames(5), spinner: false }), 15);
+
+    const result = await collect({ root: () => findDialog(document), timing });
+
+    expect(placeholder.isConnected).toBe(false);
+    expect(result.users).toHaveLength(5);
   });
 
   it("returns end_of_list for an empty list", async () => {

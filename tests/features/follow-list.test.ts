@@ -27,6 +27,19 @@ describe("collectFollowers", () => {
     expect(result.users.map((u) => u.username)).toEqual(names);
   });
 
+  it("survives Instagram swapping the placeholder dialog for the real one", async () => {
+    const names = usernames(4);
+    loadFixture("profile-header.html");
+    document.querySelector('[data-test="followers"]')!.addEventListener("click", () => {
+      document.body.insertAdjacentHTML("beforeend", '<div role="dialog"><div role="progressbar"></div></div>');
+      setTimeout(() => fakeDialog({ usernames: names, spinner: false }), 10);
+    });
+
+    const result = await collectFollowers({ timing });
+
+    expect(result.users.map((u) => u.username)).toEqual(names);
+  });
+
   it("fails clearly when the header has no followers control", async () => {
     document.body.innerHTML = "<header><section><h2>private</h2></section></header>";
 

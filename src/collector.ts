@@ -26,8 +26,11 @@ export interface Timing {
   confirmTimeoutMs: number;
 }
 
+export type RootResolver = () => Element | null;
+
 export interface CollectOptions {
-  root: Element;
+  root: Element | RootResolver;
+  document?: Document;
   maxUsers?: number;
   signal?: AbortSignal;
   onProgress?: (progress: Progress) => void;
@@ -51,11 +54,14 @@ export const DEFAULT_TIMING: Timing = {
 };
 
 export async function collect(options: CollectOptions): Promise<CollectionResult> {
-  const { root, maxUsers = Infinity, signal, onProgress } = options;
+  const { maxUsers = Infinity, signal, onProgress, document: doc = document } = options;
   const timing = { ...DEFAULT_TIMING, ...options.timing };
+  const rootOption = options.root;
+  const resolveRoot: RootResolver = typeof rootOption === "function" ? rootOption : () => rootOption;
   const users = new UserSet();
   let round = 0;
   let stuckSince: number | null = null;
+  let missingSince: number | null = null;
 
   const done = (stopReason: StopReason): CollectionResult => ({
     users: users.toArray().slice(0, maxUsers),
@@ -65,18 +71,25 @@ export async function collect(options: CollectOptions): Promise<CollectionResult
 
   while (true) {
     if (signal?.aborted) return done("cancelled");
-    if (!root.isConnected) {
-      throw new CollectionError("The list is no longer in the document", users.toArray());
-    }
     round += 1;
 
-    const found = discoverList(root);
+    const root = connected(resolveRoot());
+    const found = root ? discoverList(root) : null;
     if (!found) {
-      const outcome = await waitForChange(root, { timeoutMs: timing.loadTimeoutMs, signal });
+      missingSince ??= Date.now();
+      const remaining = timing.loadTimeoutMs - (Date.now() - missingSince);
+      if (remaining <= 0) {
+        if (users.size === 0) return done("end_of_list");
+        throw new CollectionError(
+          root ? "The list has no rows any more" : "The list is no longer in the document",
+          users.toArray(),
+        );
+      }
+      const outcome = await waitForChange(doc.body, { timeoutMs: remaining, signal });
       if (outcome === "aborted") return done("cancelled");
-      if (outcome === "timeout") return done("end_of_list");
       continue;
     }
+    missingSince = null;
 
     const added = users.addAll(extractUsers(found.rows));
     const position = readScrollPosition(found.scrollContainer);
@@ -102,4 +115,8 @@ export async function collect(options: CollectOptions): Promise<CollectionResult
     const outcome = await waitForChange(found.scrollContainer, { timeoutMs: remaining, signal });
     if (outcome === "aborted") return done("cancelled");
   }
+}
+
+function connected(element: Element | null): Element | null {
+  return element?.isConnected ? element : null;
 }

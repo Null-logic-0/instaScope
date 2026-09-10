@@ -4,7 +4,6 @@ import { findDialog } from "../instagram/discovery";
 import { findProfileStats, type ProfileStats } from "../instagram/profile-header";
 
 export interface FeatureOptions extends Omit<CollectOptions, "root"> {
-  document?: Document;
   openTimeoutMs?: number;
 }
 
@@ -31,9 +30,9 @@ async function collectFollowList(
     );
   }
 
-  const root = await openNewDialog(stats[kind], openTimeoutMs, collectOptions.signal);
-  if (!root) return CANCELLED_BEFORE_START;
-  return collect({ ...collectOptions, root });
+  const opened = await openNewDialog(stats[kind], openTimeoutMs, collectOptions.signal);
+  if (!opened) return CANCELLED_BEFORE_START;
+  return collect({ ...collectOptions, document: doc, root: () => findDialog(doc) });
 }
 
 export function countDialogs(doc: Document): number {

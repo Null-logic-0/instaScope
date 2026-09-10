@@ -47,6 +47,21 @@ Row anatomy with classes, styles and image sources removed (Following dialog, ve
 </div>
 ```
 
+### Opening sequence (cold)
+
+Measured with a `MutationObserver` on `body` after clicking the count control:
+
+| t | What happens |
+|---|---|
+| ~30 ms | A **placeholder** `div[role="dialog"]` appears: a progress bar, no heading, no rows |
+| ~60 ms | The placeholder is **removed** and a different `div[role="dialog"]` is mounted (heading, search box, progress bar) |
+| ~850 ms | The first 12 rows are appended inside the second dialog |
+
+On a warm open (same list opened again in the session) rows are present within ~60 ms.
+Any code that captures "the dialog" at the moment one appears holds a node that is
+about to be detached; the collector therefore re-resolves the topmost dialog every
+round and observes `body`, not the dialog, while no rows exist.
+
 ### Scroll container children
 
 - Following (60 accounts): `[list, spinnerWrapper]` while loading → `[list]` when exhausted.
