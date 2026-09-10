@@ -1,0 +1,19 @@
+{
+  "name": "instascope",
+  "version": "0.1.0",
+  "description": "Collect followers, following and likes from Instagram lists in your own authenticated browser session.",
+  "license": "GPL-3.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "happy-dom": "^20.14.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  }
+}
