@@ -1,0 +1,40 @@
+<!--
+  Synthetic: a plausible future redesign of the following dialog. Rows are list
+  items, the username anchor has no role attribute, the avatar sits inside a
+  button, and the display name is a div instead of a span[dir=auto]. Used to
+  pin down what discovery and extraction still guarantee when Instagram changes
+  everything except the profile link.
+-->
+<div role="presentation">
+  <div role="dialog" aria-modal="true">
+    <header><h1>Following</h1><button type="button" aria-label="Close"></button></header>
+    <section style="overflow-y: auto" data-scroll-height="900" data-client-height="400" data-test="scroll-container">
+      <ul data-test="list">
+        <li>
+          <button type="button"><img alt="alice_1's profile picture"></button>
+          <div>
+            <a href="/alice_1/"><strong>alice_1</strong></a>
+            <div>Alice One</div>
+          </div>
+          <button type="button">Following</button>
+        </li>
+        <li>
+          <button type="button"><img alt="bob.two's profile picture"></button>
+          <div>
+            <a href="/bob.two/"><strong>bob.two</strong></a>
+            <div>Bob Two</div>
+          </div>
+          <button type="button">Following</button>
+        </li>
+        <li>
+          <button type="button"><img alt="carol's profile picture"></button>
+          <div>
+            <a href="https://www.instagram.com/carol/"><strong>carol</strong></a>
+          </div>
+          <button type="button">Following</button>
+        </li>
+      </ul>
+      <footer data-test="spinner"><svg aria-label="Loading…" role="img"></svg></footer>
+    </section>
+  </div>
+</div>
