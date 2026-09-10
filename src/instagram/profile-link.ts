@@ -2,7 +2,6 @@ const INSTAGRAM_ORIGIN = "https://www.instagram.com";
 const INSTAGRAM_HOSTS = new Set(["www.instagram.com", "instagram.com"]);
 const USERNAME = /^[a-z0-9._]{1,30}$/;
 
-// Single-segment paths that look like profiles but are app routes.
 const RESERVED_PATHS = new Set([
   "explore",
   "reels",
@@ -16,9 +15,7 @@ const RESERVED_PATHS = new Set([
   "tv",
 ]);
 
-// Returns the normalized username a profile link points at, or null when the
-// href is not a profile link. Accepts the relative form Instagram renders
-// ("/alice/") as well as absolute instagram.com URLs.
+
 export function parseProfileHref(href: string | null | undefined): string | null {
   if (!href) return null;
 

@@ -1,10 +1,7 @@
 import type { User } from "../types";
 import { parseProfileHref, profileUrl } from "./profile-link";
 
-// Reads one user from a list row. The username comes from the first profile
-// link's href, never from its text: the verified badge inside the anchor
-// leaks "Verified" into textContent. Returns null for a row without a
-// profile link.
+
 export function extractUser(row: Element): User | null {
   const username = firstUsername(row);
   if (username === null) return null;
