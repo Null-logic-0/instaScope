@@ -16,6 +16,20 @@ instaScope.stats(); // followers 421, following 380, mutuals 300, …
 instaScope.downloadCsv("not-following-back");
 ```
 
+## Screenshots
+
+Collecting a public profile's following list. The dark panel mirrors what the tool
+prints to the DevTools console: progress, the pause while the tab was hidden, the end of
+the list, and the saved snapshot.
+
+![instaScope collecting a following list on Instagram](docs/screenshots/collecting.jpg)
+
+The local workbench after importing a backup: datasets ready to download, Ollama
+connected, sixty-three profiles classified and a short report written by the local
+model. The account name is masked in this picture.
+
+![The instaScope workbench with datasets, Ollama status and a report](docs/screenshots/workbench.png)
+
 ## How to use it (plain English)
 
 instaScope is a small tool you run inside your own browser while you are logged in to
@@ -386,6 +400,9 @@ is what keeps the application whole when Ollama is absent.
 - **Instagram caps the likes list at 100** accounts in the web UI. instaScope returns
   what Instagram renders; it does not call private APIs.
 - **The tab must stay visible** while collecting; instaScope pauses rather than guessing.
+- **The header count and the list can differ.** A profile showing "364 following" may
+  render only 345 rows; Instagram omits some accounts (deactivated, restricted, hidden
+  from you) from the list itself. instaScope reports what the list contains.
 - **Only what your session can see.** Private accounts you do not follow have no
   clickable counts, and `collectFollowers()` reports that instead of opening anything.
 - **Storage is per browser and per origin.** Snapshots taken in the Instagram tab live
