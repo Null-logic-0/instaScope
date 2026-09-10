@@ -1,0 +1,35 @@
+<!--
+  Profile page header as observed on 2026-09-10: the stats row is three cells
+  in fixed order; posts is never a link, followers and following are
+  a[href="#"] controls that open the dialogs. Includes the story-highlights
+  strip and action links so a finder cannot mistake them for the stats.
+  Hashed classes, inline styles and image sources removed; names replaced.
+  data-test attributes exist only for assertions.
+-->
+<header>
+  <section>
+    <div>
+      <div>
+        <div><a href="#" role="link"><h2>me_myself</h2></a></div>
+        <div>
+          <div><a href="/accounts/edit/" role="link">Edit profile</a></div>
+          <div><a href="/archive/stories/" role="link">View archive</a></div>
+          <div><div role="button" tabindex="0"><svg aria-label="Options" role="img"></svg></div></div>
+        </div>
+      </div>
+      <div>
+        <div><span dir="auto"><span><span>2,184</span></span> posts</span></div>
+        <div><a href="#" role="link" tabindex="0" data-test="followers"><span dir="auto"><span title="403,483,085"><span>403M</span></span> followers</span></a></div>
+        <div><a href="#" role="link" tabindex="0" data-test="following"><span dir="auto"><span><span>364</span></span> following</span></a></div>
+      </div>
+      <div><span dir="auto">Me Myself</span></div>
+    </div>
+  </section>
+  <section>
+    <ul>
+      <li><div role="button" tabindex="0"><canvas></canvas><img alt="Highlight one"></div></li>
+      <li><div role="button" tabindex="0"><canvas></canvas><img alt="Highlight two"></div></li>
+      <li><div role="button" tabindex="0"><svg aria-label="Plus icon" role="img"></svg><div>New</div></div></li>
+    </ul>
+  </section>
+</header>
