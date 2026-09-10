@@ -1,0 +1,22 @@
+<!--
+  Synthetic: a followers dialog with no rows. Not observed live (the inspected
+  account had followers); shaped like dialog-following.html with an empty list.
+-->
+<div role="presentation">
+  <div role="dialog" aria-modal="true">
+    <div>
+      <div style="overflow-y: auto" data-scroll-height="400" data-client-height="400">
+        <div>
+          <div><div role="heading" aria-level="1">Followers</div></div>
+          <div><svg aria-label="Close" role="img"></svg></div>
+          <div><input aria-label="Search input" placeholder="Search" type="text"></div>
+          <div style="overflow-y: auto" data-scroll-height="309" data-client-height="309" data-test="scroll-container">
+            <div style="overflow-y: auto" data-scroll-height="0" data-client-height="0">
+              <div data-test="list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

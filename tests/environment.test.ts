@@ -26,6 +26,18 @@ describe("test DOM environment", () => {
     expect(el.scrollTop).toBe(100);
   });
 
+  it("computes overflow-y from inline and stylesheet rules", () => {
+    document.body.innerHTML = `
+      <style>.scroller { overflow-y: auto; }</style>
+      <div id="inline" style="overflow-y: scroll"></div>
+      <div id="styled" class="scroller"></div>
+      <div id="plain"></div>`;
+
+    expect(getComputedStyle(document.querySelector("#inline")!).overflowY).toBe("scroll");
+    expect(getComputedStyle(document.querySelector("#styled")!).overflowY).toBe("auto");
+    expect(getComputedStyle(document.querySelector("#plain")!).overflowY).not.toMatch(/auto|scroll/);
+  });
+
   it("delivers MutationObserver callbacks asynchronously", async () => {
     const target = document.createElement("ul");
     document.body.append(target);

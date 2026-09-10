@@ -1,0 +1,69 @@
+<!--
+  Following dialog as observed on 2026-09-10 (see docs/instagram-dom.md).
+  Hashed classes, inline styles and image sources removed; usernames replaced.
+  Geometry that a real browser would compute is declared via data-scroll-height /
+  data-client-height. data-test attributes exist only for assertions.
+-->
+<div>
+  <div>
+    <a href="/"><span>Home</span></a>
+    <a href="/explore/"><span>Search</span></a>
+    <a href="/reels/"><span>Reels</span></a>
+    <a href="/me_myself/"><img alt="me_myself's profile picture"><span>Profile</span></a>
+  </div>
+  <div role="presentation">
+    <div role="dialog" aria-modal="true">
+      <div>
+        <div style="overflow-y: auto" data-scroll-height="400" data-client-height="400">
+          <div>
+            <div><div role="heading" aria-level="1">Following</div></div>
+            <div><svg aria-label="Close" role="img"></svg></div>
+            <div><input aria-label="Search input" placeholder="Search" type="text"></div>
+            <div style="overflow-y: auto" data-scroll-height="796" data-client-height="309" data-test="scroll-container">
+              <div style="overflow-y: auto" data-scroll-height="730" data-client-height="730">
+                <div data-test="list">
+                  <div>
+                    <div><div><div>
+                      <div><div><span><div>
+                        <div role="button" tabindex="0"><canvas height="55" width="55"></canvas><span role="link" tabindex="-1"><img alt="alice_1's profile picture"></span></div>
+                      </div></span></div></div>
+                      <div><div><div>
+                        <div><div><span><div><a href="/alice_1/" role="link" tabindex="0"><div><div><span dir="auto">alice_1</span><div><svg aria-label="Verified" role="img"><title>Verified</title></svg></div></div></div></a></div></span></div></div>
+                        <span dir="auto"><span>Alice One</span></span>
+                      </div></div></div>
+                      <div><div><button type="button"><div><div dir="auto">Following</div></div></button></div></div>
+                    </div></div></div>
+                  </div>
+                  <div>
+                    <div><div><div>
+                      <div><div><span><div>
+                        <div aria-disabled="true" role="button" tabindex="-1"><canvas height="55" width="55"></canvas><a href="/bob.two/" role="link" tabindex="0"><img alt="bob.two's profile picture"></a></div>
+                      </div></span></div></div>
+                      <div><div><div>
+                        <div><div><span><div><a href="/bob.two/" role="link" tabindex="0"><div><div><span dir="auto">bob.two</span></div></div></a></div></span></div></div>
+                        <span dir="auto"><span>Bob Two 🐙</span></span>
+                      </div></div></div>
+                      <div><div><button type="button"><div><div dir="auto">Following</div></div></button></div></div>
+                    </div></div></div>
+                  </div>
+                  <div>
+                    <div><div><div>
+                      <div><div><span><div>
+                        <div role="button" tabindex="0"><canvas height="55" width="55"></canvas><span role="link" tabindex="-1"><img alt="carol's profile picture"></span></div>
+                      </div></span></div></div>
+                      <div><div><div>
+                        <div><div><span><div><a href="/carol/" role="link" tabindex="0"><div><div><span dir="auto">carol</span></div></div></a></div></span></div></div>
+                      </div></div></div>
+                      <div><div><button type="button"><div><div dir="auto">Following</div></div></button></div></div>
+                    </div></div></div>
+                  </div>
+                </div>
+              </div>
+              <div data-test="spinner"><div><svg aria-label="Loading..." role="img"></svg></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
