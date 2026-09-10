@@ -96,8 +96,9 @@ the likes one is last in document order, heading "Likes"). This list is **virtua
   at any time (`ch` 356 px, so roughly the visible window plus a little slack).
 - Scrolling to the bottom kept 11 rows but they were *different accounts* — the window
   slides; nodes for off-screen rows are removed.
-- No spinner, no growth: a post with 2.6 M likes exposed ≈107 likers. Both surfaces cap
-  the list around 100; the full liker list is not available in the web UI.
+- No spinner, no growth: a post with 2.6 M likes exposed exactly 100 likers (verified by
+  collecting the whole window). Both surfaces cap the list at 100; the full liker list
+  is not available in the web UI.
 
 Consequence: DOM row count is meaningless as a progress measure for likes; only the
 accumulated set of unique usernames is. Scroll steps must be smaller than the window
@@ -143,5 +144,5 @@ its patience clocks so hidden time never counts as "no growth".
 |---|---|---|---|---|
 | Followers dialog | dialog, `overflow-y: auto` | all loaded so far (+ suggestions section) | yes, 12 per fetch | none seen |
 | Following dialog | dialog, `overflow-y: auto` | all loaded so far | yes, 12 per fetch | none seen |
-| Likes page | `document.scrollingElement` | all (100) | no | ~100 |
-| Likes dialog | dialog, `overflow-y: auto` | ~11 (windowed) | no | ~107 |
+| Likes page | `document.scrollingElement` | all (100) | no | 100 |
+| Likes dialog | dialog, `overflow-y: auto` | ~11 (windowed) | no | 100 |
