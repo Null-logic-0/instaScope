@@ -30,7 +30,7 @@ model. The account name is masked in this picture.
 
 ![The instaScope workbench with datasets, Ollama status and a report](docs/screenshots/workbench.png)
 
-## How to use it (plain English)
+## How to use it
 
 instaScope is a small tool you run inside your own browser while you are logged in to
 Instagram. It reads the lists Instagram already shows you (followers, following, likes)
