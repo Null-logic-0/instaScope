@@ -1,5 +1,5 @@
 import { build } from "esbuild";
-import { copyFile, mkdir } from "node:fs/promises";
+import { cp, mkdir } from "node:fs/promises";
 
 await mkdir("dist", { recursive: true });
 await build({
@@ -12,5 +12,5 @@ await build({
   outfile: "dist/instascope.js",
   banner: { js: "/* instaScope 0.1.0 | GPL-3.0 */" },
 });
-await copyFile("workbench/index.html", "dist/index.html");
-console.log("built dist/instascope.js and dist/index.html");
+await cp("workbench", "dist", { recursive: true });
+console.log("built dist/instascope.js and copied workbench/ into dist/");

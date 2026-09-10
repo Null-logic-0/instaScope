@@ -1,0 +1,29 @@
+:root {
+  color-scheme: light dark;
+  font: 15px/1.5 system-ui, sans-serif;
+  --border: #8884;
+  --surface: #8881;
+  --ok: #2e9e4f;
+  --warn: #d9a400;
+  --bad: #c93a3a;
+  --idle: #999;
+}
+
+body {
+  max-width: 56rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 {
+  font-size: 1.4rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-top: 0;
+}
+
+.muted {
+  opacity: 0.7;
+}

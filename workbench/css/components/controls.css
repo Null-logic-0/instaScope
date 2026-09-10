@@ -1,0 +1,15 @@
+button,
+input,
+select {
+  font: inherit;
+  padding: 0.35rem 0.6rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

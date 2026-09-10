@@ -4,27 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>instaScope workbench</title>
-<style>
-  :root { color-scheme: light dark; font: 15px/1.5 system-ui, sans-serif; }
-  body { max-width: 56rem; margin: 2rem auto; padding: 0 1rem; }
-  h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 2rem; }
-  section { border: 1px solid #8884; border-radius: 8px; padding: 1rem 1.25rem; margin-top: 1rem; }
-  button, input, select { font: inherit; padding: .35rem .6rem; }
-  button { cursor: pointer; }
-  .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
-  .muted { opacity: .7; }
-  .dot { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; margin-right: .4rem; background: #999; }
-  .dot.ready { background: #2e9e4f; } .dot.model_missing { background: #d9a400; } .dot.unavailable { background: #c93a3a; }
-  table { border-collapse: collapse; } td { padding: .15rem .8rem .15rem 0; }
-  pre { white-space: pre-wrap; background: #8881; padding: .75rem; border-radius: 6px; max-height: 14rem; overflow: auto; font-size: .85rem; }
-  #report { white-space: pre-wrap; }
-</style>
+<link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 <h1>instaScope workbench</h1>
 <p class="muted">Everything on this page stays on this computer. Data is kept in this browser's local storage, and AI features talk only to an Ollama server running on your machine. Nothing is sent to any cloud service.</p>
 
-<section id="data">
+<section class="panel" id="data">
   <h2>Data</h2>
   <div class="row">
     <label>Import a backup (<code>instascope-backup-*.json</code>): <input type="file" id="import" accept="application/json,.json"></label>
@@ -37,7 +23,7 @@
   <div class="row" id="datasets"></div>
 </section>
 
-<section id="ollama">
+<section class="panel" id="ollama">
   <h2>Ollama (local AI, optional)</h2>
   <div class="row">
     <span id="status"><span class="dot"></span>Checking…</span>
@@ -56,12 +42,12 @@
   <div class="row">
     <button id="explain">Explain latest snapshot</button>
   </div>
-  <p id="report"></p>
+  <p class="report" id="report"></p>
 </section>
 
-<section>
+<section class="panel">
   <h2>Log</h2>
-  <pre id="log"></pre>
+  <pre class="log" id="log"></pre>
   <p class="muted">The full API is available in the DevTools console as <code>instaScope</code>.</p>
 </section>
 

@@ -1,0 +1,13 @@
+.log {
+  white-space: pre-wrap;
+  background: var(--surface);
+  padding: 0.75rem;
+  border-radius: 6px;
+  max-height: 14rem;
+  overflow: auto;
+  font-size: 0.85rem;
+}
+
+.report {
+  white-space: pre-wrap;
+}

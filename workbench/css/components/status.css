@@ -1,0 +1,20 @@
+.dot {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  background: var(--idle);
+}
+
+.dot.ready {
+  background: var(--ok);
+}
+
+.dot.model_missing {
+  background: var(--warn);
+}
+
+.dot.unavailable {
+  background: var(--bad);
+}
