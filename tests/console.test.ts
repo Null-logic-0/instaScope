@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { createConsoleApi } from "../src/console";
 import { fakeDialog, usernames } from "./helpers/fake-list";
 import { loadFixture } from "./helpers/fixture";
+import { resetVisibility, setVisibility } from "./helpers/visibility";
+
+afterEach(resetVisibility);
 
 const timing = { settleMs: 5, loadTimeoutMs: 40, confirmTimeoutMs: 20 };
 
@@ -51,6 +54,23 @@ describe("console api", () => {
     const progress = lines.filter((line) => line.includes("so far"));
     expect(progress.length).toBeGreaterThan(0);
     expect(progress.length).toBeLessThan(20);
+  });
+
+  it("announces a pause when the tab is hidden and a resume when shown", async () => {
+    profileWithGrowingFollowing(20, 10);
+    const lines: string[] = [];
+    const api = createConsoleApi({ log: (line) => lines.push(line) });
+    setVisibility("hidden");
+
+    const pending = api.collectFollowing({ timing });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(lines).toEqual([expect.stringMatching(/paused, the tab is hidden/)]);
+
+    setVisibility("visible");
+    const result = await pending;
+
+    expect(result.users).toHaveLength(20);
+    expect(lines[1]).toMatch(/resumed/);
   });
 
   it("cancels the running collection", async () => {

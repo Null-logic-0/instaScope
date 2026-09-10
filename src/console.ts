@@ -35,6 +35,7 @@ export function createConsoleApi({ log = console.log, progressIntervalMs = 2000 
       );
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
+    if (document.visibilityState === "hidden") onVisibilityChange();
 
     try {
       const result = await feature({ ...options, signal: current.signal, onProgress });
