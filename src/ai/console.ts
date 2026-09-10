@@ -1,6 +1,6 @@
 import { buildDataset, computeStats, type Dataset, type Stats } from "../analytics";
 import type { Store } from "../store/store";
-import { classifyProfiles, DEFAULT_CATEGORIES, type ClassifyResult } from "./classify";
+import { classifyProfiles, DEFAULT_CATEGORIES, type ClassifyProgress, type ClassifyResult } from "./classify";
 import { OllamaClient, type OllamaClientOptions, type OllamaConfig, type OllamaStatus } from "./ollama";
 import { explainStats } from "./report";
 
@@ -18,6 +18,7 @@ export interface ClassifyCommand {
   categories?: readonly string[];
   batchSize?: number;
   force?: boolean;
+  onProgress?: (progress: ClassifyProgress) => void;
 }
 
 export function createAiConsole({ store, subjectOrLatest, log, client: clientOptions }: AiConsoleOptions) {
@@ -59,7 +60,10 @@ export function createAiConsole({ store, subjectOrLatest, log, client: clientOpt
           ...(command.batchSize !== undefined && { batchSize: command.batchSize }),
           ...(command.force !== undefined && { force: command.force }),
           signal: controller.signal,
-          onProgress: ({ done, total }) => log(`[instaScope] Classifying profiles: ${done} / ${total}`),
+          onProgress: (progress) => {
+            log(`[instaScope] Classifying profiles: ${progress.done} / ${progress.total}`);
+            command.onProgress?.(progress);
+          },
         });
         log(formatClassifyResult(result));
         return result;

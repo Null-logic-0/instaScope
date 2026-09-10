@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm test",
-    "build": "esbuild src/index.ts --bundle --format=iife --global-name=instaScope --target=es2022 --charset=utf8 --outfile=dist/instascope.js --banner:js=\"/* instaScope 0.1.0 | GPL-3.0 */\""
+    "build": "node scripts/build.mjs",
+    "workbench": "npm run build && node scripts/serve.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>instaScope workbench</title>
+<style>
+  :root { color-scheme: light dark; font: 15px/1.5 system-ui, sans-serif; }
+  body { max-width: 56rem; margin: 2rem auto; padding: 0 1rem; }
+  h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 2rem; }
+  section { border: 1px solid #8884; border-radius: 8px; padding: 1rem 1.25rem; margin-top: 1rem; }
+  button, input, select { font: inherit; padding: .35rem .6rem; }
+  button { cursor: pointer; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
+  .muted { opacity: .7; }
+  .dot { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; margin-right: .4rem; background: #999; }
+  .dot.ready { background: #2e9e4f; } .dot.model_missing { background: #d9a400; } .dot.unavailable { background: #c93a3a; }
+  table { border-collapse: collapse; } td { padding: .15rem .8rem .15rem 0; }
+  pre { white-space: pre-wrap; background: #8881; padding: .75rem; border-radius: 6px; max-height: 14rem; overflow: auto; font-size: .85rem; }
+  #report { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>instaScope workbench</h1>
+<p class="muted">Everything on this page stays on this computer. Data is kept in this browser's local storage, and AI features talk only to an Ollama server running on your machine. Nothing is sent to any cloud service.</p>
+
+<section id="data">
+  <h2>Data</h2>
+  <div class="row">
+    <label>Import a backup (<code>instascope-backup-*.json</code>): <input type="file" id="import" accept="application/json,.json"></label>
+    <button id="backup">Download backup</button>
+  </div>
+  <div class="row">
+    <label>Account: <select id="subject"></select></label>
+    <span id="stats" class="muted"></span>
+  </div>
+  <div class="row" id="datasets"></div>
+</section>
+
+<section id="ollama">
+  <h2>Ollama (local AI, optional)</h2>
+  <div class="row">
+    <span id="status"><span class="dot"></span>Checking…</span>
+    <button id="recheck">Check again</button>
+  </div>
+  <div class="row">
+    <label>Server <input id="baseUrl" size="24"></label>
+    <label>Model <input id="model" size="14"></label>
+    <button id="apply">Apply</button>
+  </div>
+  <div class="row">
+    <button id="classify">Classify profiles</button>
+    <button id="cancel">Cancel</button>
+    <span id="progress" class="muted"></span>
+  </div>
+  <div class="row">
+    <button id="explain">Explain latest snapshot</button>
+  </div>
+  <p id="report"></p>
+</section>
+
+<section>
+  <h2>Log</h2>
+  <pre id="log"></pre>
+  <p class="muted">The full API is available in the DevTools console as <code>instaScope</code>.</p>
+</section>
+
+<script src="instascope.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const DATASETS = ["followers", "following", "mutuals", "not-following-back", "fans", "new-followers", "lost-followers", "snapshot"];
+
+  const logLine = (message) => {
+    $("log").textContent += message + "\n";
+    $("log").scrollTop = $("log").scrollHeight;
+  };
+  document.addEventListener("instascope:log", (event) => logLine(event.detail));
+  const fail = (error) => logLine(`[workbench] ${error && error.message ? error.message : error}`);
+
+  const subject = () => $("subject").value || undefined;
+
+  const refreshData = () => {
+    const subjects = instaScope.subjects();
+    const previous = $("subject").value;
+    $("subject").replaceChildren(...subjects.map((s) => Object.assign(document.createElement("option"), { value: s, textContent: s })));
+    if (subjects.includes(previous)) $("subject").value = previous;
+    if (subjects.length === 0) {
+      $("stats").textContent = "No data yet. Import a backup exported from the Instagram tab.";
+      $("datasets").replaceChildren();
+      return;
+    }
+    const s = instaScope.stats(subject());
+    const n = (v) => (v === null ? "n/a" : v);
+    $("stats").textContent = `followers ${n(s.followers)}, following ${n(s.following)}, mutuals ${n(s.mutuals)}, not following back ${n(s.notFollowingBack)}, fans ${n(s.fans)}, new ${n(s.newFollowers)}, lost ${n(s.lostFollowers)}`;
+    $("datasets").replaceChildren(
+      ...DATASETS.map((name) => {
+        const button = document.createElement("button");
+        button.textContent = `${name}.csv`;
+        button.onclick = () => { try { instaScope.downloadCsv(name, subject()); } catch (error) { fail(error); } };
+        return button;
+      }),
+    );
+  };
+
+  const refreshStatus = async () => {
+    $("status").innerHTML = '<span class="dot"></span>Checking…';
+    const status = await instaScope.ai.status();
+    const label = { ready: "Model ready", model_missing: "Model unavailable", unavailable: "Ollama unavailable" }[status.state];
+    $("status").innerHTML = `<span class="dot ${status.state}"></span><strong>${label}</strong> — ${status.detail}`;
+    $("classify").disabled = $("explain").disabled = status.state !== "ready";
+  };
+
+  $("import").onchange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try { await instaScope.importJson(file); refreshData(); } catch (error) { fail(error); }
+    event.target.value = "";
+  };
+  $("backup").onclick = () => instaScope.downloadJson();
+  $("subject").onchange = refreshData;
+  $("recheck").onclick = () => refreshStatus().catch(fail);
+  $("apply").onclick = () => { instaScope.ai.configure({ baseUrl: $("baseUrl").value, model: $("model").value }); refreshStatus().catch(fail); };
+  $("classify").onclick = async () => {
+    $("progress").textContent = "Classifying…";
+    try {
+      const result = await instaScope.ai.classify({
+        subject: subject(),
+        dataset: "snapshot",
+        onProgress: ({ done, total }) => { $("progress").textContent = `Classifying profiles: ${done} / ${total}`; },
+      });
+      $("progress").textContent = `${result.stopReason}: ${result.classified} classified, ${result.skipped} already done, ${result.unresolved.length} unresolved`;
+    } catch (error) { fail(error); $("progress").textContent = ""; }
+  };
+  $("cancel").onclick = () => { if (!instaScope.ai.cancel()) logLine("[workbench] nothing to cancel"); };
+  $("explain").onclick = async () => {
+    $("report").textContent = "Asking the model…";
+    try { $("report").textContent = (await instaScope.ai.report(subject())).text; } catch (error) { fail(error); $("report").textContent = ""; }
+  };
+
+  const config = instaScope.ai.config();
+  $("baseUrl").value = config.baseUrl;
+  $("model").value = config.model;
+  refreshData();
+  refreshStatus().catch(fail);
+})();
+</script>
+</body>
+</html>

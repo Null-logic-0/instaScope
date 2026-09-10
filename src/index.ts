@@ -8,6 +8,11 @@ export type { Classification, ListKind, ProfileRecord, Snapshot, StoreData, User
 export type { ClassifyResult } from "./ai/classify";
 export type { OllamaConfig, OllamaStatus } from "./ai/ollama";
 
+function log(message: string): void {
+  console.log(message);
+  document.dispatchEvent(new CustomEvent("instascope:log", { detail: message }));
+}
+
 export const {
   store,
   ai,
@@ -25,4 +30,4 @@ export const {
   toCsv,
   toJson,
   copyToClipboard,
-} = createConsoleApi();
+} = createConsoleApi({ log });
