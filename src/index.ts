@@ -5,8 +5,12 @@ export type { CollectionResult, Progress, StopReason } from "./collector";
 export type { FeatureOptions } from "./features/follow-list";
 export type { Classification, ListKind, ProfileRecord, Snapshot, StoreData, User } from "./types";
 
+export type { ClassifyResult } from "./ai/classify";
+export type { OllamaConfig, OllamaStatus } from "./ai/ollama";
+
 export const {
   store,
+  ai,
   collectFollowers,
   collectFollowing,
   collectLikes,

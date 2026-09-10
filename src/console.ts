@@ -1,3 +1,5 @@
+import { createAiConsole } from "./ai/console";
+import type { OllamaClientOptions } from "./ai/ollama";
 import { buildDataset, computeStats, datasetFilename, type Dataset, type Stats } from "./analytics";
 import type { CollectionResult, Progress } from "./collector";
 import { collectFollowers, collectFollowing, type FeatureOptions } from "./features/follow-list";
@@ -12,6 +14,7 @@ export interface ConsoleOptions {
   log?: (message: string) => void;
   progressIntervalMs?: number;
   storage?: StorageBackend;
+  ai?: OllamaClientOptions;
 }
 
 type Feature = (options: FeatureOptions) => Promise<CollectionResult>;
@@ -20,6 +23,7 @@ export function createConsoleApi({
   log = console.log,
   progressIntervalMs = 2000,
   storage = localStorage,
+  ai: aiOptions,
 }: ConsoleOptions = {}) {
   const store = new Store(storage);
   let current: AbortController | null = null;
@@ -81,6 +85,7 @@ export function createConsoleApi({
 
   return {
     store,
+    ai: createAiConsole({ store, subjectOrLatest, log, ...(aiOptions && { client: aiOptions }) }),
     collectFollowers: (options: FeatureOptions = {}) => run("followers", collectFollowers, options),
     collectFollowing: (options: FeatureOptions = {}) => run("following", collectFollowing, options),
     collectLikes: (options: FeatureOptions = {}) => run("likes", collectLikes, options),
