@@ -16,8 +16,14 @@ export function downloadJson(users: User[], filename = "instascope.json"): void 
   download(filename, toJson(users), "application/json");
 }
 
+const UTF8_BOM = String.fromCharCode(0xfeff);
+
+export function downloadCsvText(csv: string, filename: string): void {
+  download(filename, UTF8_BOM + csv, "text/csv;charset=utf-8");
+}
+
 export function downloadCsv(users: User[], filename = "instascope.csv"): void {
-  download(filename, toCsv(users), "text/csv");
+  downloadCsvText(toCsv(users), filename);
 }
 
 export function copyToClipboard(text: string): Promise<void> {

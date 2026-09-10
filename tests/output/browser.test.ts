@@ -6,15 +6,19 @@ const alice: User = { username: "alice", displayName: "Alice", profileUrl: "http
 
 function stubDownloads() {
   const clicks: { href: string; download: string }[] = [];
+  const blobs: Blob[] = [];
   vi.stubGlobal("URL", {
     ...URL,
-    createObjectURL: vi.fn(() => "blob:instascope"),
+    createObjectURL: vi.fn((blob: Blob) => {
+      blobs.push(blob);
+      return "blob:instascope";
+    }),
     revokeObjectURL: vi.fn(),
   });
   vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
     clicks.push({ href: this.getAttribute("href") ?? "", download: this.download });
   });
-  return clicks;
+  return { clicks, blobs };
 }
 
 afterEach(() => {
@@ -24,7 +28,7 @@ afterEach(() => {
 
 describe("downloadJson / downloadCsv", () => {
   it("clicks a temporary link pointing at a blob and removes it", () => {
-    const clicks = stubDownloads();
+    const { clicks } = stubDownloads();
 
     downloadJson([alice]);
     downloadCsv([alice], "followers.csv");
@@ -34,6 +38,18 @@ describe("downloadJson / downloadCsv", () => {
       { href: "blob:instascope", download: "followers.csv" },
     ]);
     expect(document.querySelectorAll("a")).toHaveLength(0);
+  });
+
+  it("prefixes CSV downloads with a UTF-8 byte order mark", async () => {
+    const { blobs } = stubDownloads();
+
+    downloadCsv([{ ...alice, displayName: "Bob Two 🐙" }]);
+
+    const text = await blobs[0]!.text();
+    expect(blobs[0]!.type).toBe("text/csv;charset=utf-8");
+    expect(text.charCodeAt(0)).toBe(0xfeff);
+    expect(text.slice(1).startsWith("username,display_name,profile_url\r\n")).toBe(true);
+    expect(text).toContain("Bob Two 🐙");
   });
 });
 
